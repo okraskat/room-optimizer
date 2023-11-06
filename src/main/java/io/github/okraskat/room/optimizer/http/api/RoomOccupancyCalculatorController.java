@@ -3,6 +3,7 @@ package io.github.okraskat.room.optimizer.http.api;
 import io.github.okraskat.room.optimizer.domain.CalculatedOccupancy;
 import io.github.okraskat.room.optimizer.domain.OccupancyCalculatorApi;
 import io.github.okraskat.room.optimizer.domain.RoomCategory;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,7 +21,7 @@ class RoomOccupancyCalculatorController {
     }
 
     @PostMapping
-    OccupancyCalculationResponse calculate(@RequestBody OccupancyCalculationRequest calculationRequest) {
+    OccupancyCalculationResponse calculate(@Validated @RequestBody OccupancyCalculationRequest calculationRequest) {
         Map<RoomCategory, Integer> availableRoomsPerCategory = calculationRequest.availableRooms()
                 .stream()
                 .collect(Collectors.toMap(AvailableRooms::roomCategory, AvailableRooms::rooms, Integer::sum));
