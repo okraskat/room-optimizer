@@ -1,0 +1,28 @@
+package io.github.okraskat.room.optimizer.domain;
+
+import org.springframework.stereotype.Service;
+
+import java.util.*;
+
+@Service
+class OccupancyCalculator implements OccupancyCalculatorApi {
+
+    @Override
+    public List<CalculatedOccupancy> calculate(Map<RoomCategory, Integer> availableRoomsPerCategory, Collection<Integer> potentialPayments) {
+        TreeSet<Integer> sortedPayments = new TreeSet<>(potentialPayments);
+        List<RoomCategory> categoriesSortedByPriceDesc = Arrays.asList(RoomCategory.values());
+        categoriesSortedByPriceDesc.sort(Comparator.comparing(RoomCategory::getLowestAvailablePrice).reversed());
+        OccupancyCalculation occupancyCalculation = new OccupancyCalculation(availableRoomsPerCategory);
+
+        while (!sortedPayments.isEmpty()) {
+            int highestPayment = Objects.requireNonNull(sortedPayments.pollLast());
+            categoriesSortedByPriceDesc.stream()
+                    .filter(c -> c.isPaymentInCategoryRange(highestPayment))
+                    .findFirst()
+                    .ifPresent(c -> occupancyCalculation.tryToOccupyRoom(c, highestPayment));
+
+        }
+        return occupancyCalculation.getResults();
+    }
+
+}
