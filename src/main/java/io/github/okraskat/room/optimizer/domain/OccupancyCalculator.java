@@ -12,7 +12,7 @@ class OccupancyCalculator implements OccupancyCalculatorApi {
         TreeSet<Integer> sortedPayments = new TreeSet<>(potentialPayments);
         List<RoomCategory> categoriesSortedByPriceDesc = Arrays.asList(RoomCategory.values());
         categoriesSortedByPriceDesc.sort(Comparator.comparing(RoomCategory::getLowestAvailablePrice).reversed());
-        OccupancyCalculation occupancyCalculation = new OccupancyCalculation(availableRoomsPerCategory);
+        OccupancyCalculation occupancyCalculation = new OccupancyCalculation(availableRoomsPerCategory, categoriesSortedByPriceDesc);
 
         while (!sortedPayments.isEmpty()) {
             int highestPayment = Objects.requireNonNull(sortedPayments.pollLast());
