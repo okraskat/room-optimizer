@@ -1,6 +1,7 @@
 package io.github.okraskat.room.optimizer
 
 import io.restassured.RestAssured
+import io.restassured.specification.RequestSpecification
 import org.spockframework.spring.EnableSharedInjection
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.server.LocalServerPort

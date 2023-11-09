@@ -3,7 +3,7 @@ package io.github.okraskat.room.optimizer
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.github.okraskat.room.optimizer.domain.RoomCategory
-import io.github.okraskat.room.optimizer.http.api.AvailableRooms
+
 import io.github.okraskat.room.optimizer.http.api.OccupancyCalculationRequest
 import io.github.okraskat.room.optimizer.http.api.OccupancyCalculationResponse
 import org.springframework.http.HttpStatus
@@ -24,7 +24,7 @@ class RoomOccupancyCalculatorControllerSpec extends AbstractWebSpec {
 
     def "should calculate properly rooms occupancy for provided payments set"() {
         given:
-        def calculationRequest = new OccupancyCalculationRequest(mapAvailableRooms(availableRooms), potentialPayments)
+        def calculationRequest = new OccupancyCalculationRequest(availableRooms, potentialPayments)
 
         when:
         def response = jsonRequest()
@@ -44,6 +44,11 @@ class RoomOccupancyCalculatorControllerSpec extends AbstractWebSpec {
         [(RoomCategory.PREMIUM): 3, (RoomCategory.ECONOMY): 3]  || [(RoomCategory.PREMIUM): 3, (RoomCategory.ECONOMY): 3] || [(RoomCategory.PREMIUM): 738, (RoomCategory.ECONOMY): 167]
         [(RoomCategory.PREMIUM): 7, (RoomCategory.ECONOMY): 5]  || [(RoomCategory.PREMIUM): 6, (RoomCategory.ECONOMY): 4] || [(RoomCategory.PREMIUM): 1054, (RoomCategory.ECONOMY): 189]
         [(RoomCategory.PREMIUM): 2, (RoomCategory.ECONOMY): 7]  || [(RoomCategory.PREMIUM): 2, (RoomCategory.ECONOMY): 4] || [(RoomCategory.PREMIUM): 583, (RoomCategory.ECONOMY): 189]
+        [(RoomCategory.PREMIUM): 10, (RoomCategory.ECONOMY): 1] || [(RoomCategory.PREMIUM): 7, (RoomCategory.ECONOMY): 1] || [(RoomCategory.PREMIUM): 1153, (RoomCategory.ECONOMY): 45]
+        [(RoomCategory.ECONOMY): 2]                             || [(RoomCategory.ECONOMY): 2]                            || [(RoomCategory.ECONOMY): 144]
+        [(RoomCategory.PREMIUM): 2]                             || [(RoomCategory.PREMIUM): 2]                            || [(RoomCategory.PREMIUM): 583]
+        [(RoomCategory.PREMIUM): 0]                             || [(RoomCategory.PREMIUM): 0]                            || [(RoomCategory.PREMIUM): 0]
+        [(RoomCategory.ECONOMY): 0]                             || [(RoomCategory.ECONOMY): 0]                            || [(RoomCategory.ECONOMY): 0]
     }
 
     def "should reject invalid calculation requests"() {
@@ -60,20 +65,10 @@ class RoomOccupancyCalculatorControllerSpec extends AbstractWebSpec {
 
         where:
         availableRooms                                 || payments
-        [new AvailableRooms(RoomCategory.PREMIUM, 1)]  || []
-        [new AvailableRooms(RoomCategory.PREMIUM, 1)]  || null
-        [new AvailableRooms(RoomCategory.PREMIUM, 0)]  || [1]
-        [new AvailableRooms(null, 1)]                  || [1]
-        []                                             || [1]
-        null                                           || [1]
-    }
-
-
-    private mapAvailableRooms(Map<RoomCategory, Integer> availableRooms) {
-        availableRooms.entrySet()
-                .stream()
-                .map { new AvailableRooms(it.key, it.value) }
-                .toList()
+        [(RoomCategory.PREMIUM):1]                     || []
+        [(RoomCategory.PREMIUM):1]                     || null
+        Collections.emptyMap()                         || [BigDecimal.ONE]
+        null                                           || [BigDecimal.ONE]
     }
 
 }

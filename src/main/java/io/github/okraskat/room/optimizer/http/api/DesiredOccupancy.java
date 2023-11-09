@@ -2,5 +2,7 @@ package io.github.okraskat.room.optimizer.http.api;
 
 import io.github.okraskat.room.optimizer.domain.RoomCategory;
 
-record DesiredOccupancy(RoomCategory roomCategory, int usedRooms, int potentialProfit) {
+import java.math.BigDecimal;
+
+record DesiredOccupancy(RoomCategory roomCategory, int usedRooms, BigDecimal potentialProfit) {
 }

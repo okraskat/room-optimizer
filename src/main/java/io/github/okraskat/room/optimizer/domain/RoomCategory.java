@@ -1,28 +1,29 @@
 package io.github.okraskat.room.optimizer.domain;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 
 public enum RoomCategory {
-    PREMIUM(100, null),
-    ECONOMY(0, 100)
+    PREMIUM(BigDecimal.valueOf(100), null),
+    ECONOMY(BigDecimal.ZERO, BigDecimal.valueOf(100))
     ;
 
-    private final int lowestAvailablePrice;
-    private final Integer highestAvailablePrice;
+    private final BigDecimal lowestAvailablePrice;
+    private final BigDecimal highestAvailablePrice;
 
-    RoomCategory(int lowestAvailablePrice, Integer highestAvailablePrice) {
+    RoomCategory(BigDecimal lowestAvailablePrice, BigDecimal highestAvailablePrice) {
         this.lowestAvailablePrice = lowestAvailablePrice;
         this.highestAvailablePrice = highestAvailablePrice;
     }
 
-    boolean isPaymentInCategoryRange(int payment) {
-        Boolean highestPriceMatches = Optional.ofNullable(highestAvailablePrice)
-                .map(h -> h >= payment)
+    boolean isPaymentInCategoryRange(BigDecimal payment) {
+        boolean highestPriceMatches = Optional.ofNullable(highestAvailablePrice)
+                .map(h -> h.compareTo(payment) >= 0)
                 .orElse(true);
-        return payment >= lowestAvailablePrice && highestPriceMatches;
+        return payment.compareTo(lowestAvailablePrice) >= 0 && highestPriceMatches;
     }
 
-    int getLowestAvailablePrice() {
+    BigDecimal getLowestAvailablePrice() {
         return lowestAvailablePrice;
     }
 }
